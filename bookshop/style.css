@@ -1,0 +1,600 @@
+/* ===== อ่านเพลิน Bookstore — Mobile First =====
+   ฐาน = มือถือ  |  ขยายที่ 768px (แท็บเล็ต/คอม)  |  1200px (จอกว้าง)
+
+   CSS Selector ที่ใช้ในไฟล์นี้ (ตาม Project Rubrics ข้อ 2)
+   - Type selector         : body, h1, table, del ...
+   - Universal selector    : *
+   - Class selector        : .btn, .badge, .panel ...
+   - ID selector           : #menu, #cart-count, #toast, #suggest, #email ...
+   - Pseudo-class          : :hover, :focus, :nth-child(even), :invalid, :checked, :disabled, :last-child
+   - Pseudo-element        : ::before, ::after, ::placeholder, ::selection
+   - Attribute selector    : input[type="search"], a[href^="orders.php"], [disabled]
+   - Descendant combinator : nav h2, table.data th
+   - Child combinator      : body > header, ul.menu > li
+   - Adjacent sibling      : h2 + p.hint, .panel > h2 + p
+   - Specificity weight    : ดูหัวข้อ "Specificity" ด้านล่าง
+*/
+:root {
+  --ink: #2b2a33;
+  --muted: #6b6878;
+  --paper: #faf7f2;
+  --card: #ffffff;
+  --line: #e6dfd4;
+  --brand: #22577a;
+  --brand-dark: #173d57;
+  --brand-soft: #e3eef5;
+  --sale: #c8553d;
+  --good: #2e7d4f;
+  --warn: #b7791f;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--brand-dark); }
+
+body {
+  margin: 0;
+  font-family: "Sarabun", "Leelawadee UI", Tahoma, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--paper);
+  /* sticky footer: เนื้อหาสั้นแค่ไหน footer ก็อยู่ล่างสุดของจอ */
+  display: flex;
+  flex-flow: column;
+  min-height: 100vh;
+}
+
+::selection { background: #ffd166; color: var(--ink); }
+
+a { color: var(--brand); }
+a:hover { text-decoration: underline; }
+code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 0.92em; }
+
+/* ---------- header (เฉพาะ header ที่เป็นลูกโดยตรงของ body = Child combinator) ---------- */
+body > header {
+  display: flex;
+  flex-flow: column;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--brand);
+}
+.logo a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 1.3em;
+  font-weight: bold;
+  text-decoration: none;
+}
+.logo-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--brand);
+}
+.search form { display: flex; gap: 6px; }
+.search input[type="search"] {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  font: inherit;
+}
+.search input[type="search"]::placeholder { color: #9a97a6; }
+.search button {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: #ffd166;
+  font: inherit;
+  cursor: pointer;
+}
+
+.userbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.userbar a { color: #fff; text-decoration: none; }
+.userbar a:hover { text-decoration: underline; }
+.userbar .role { display: inline; padding: 0 6px; border-radius: 4px; background: #ffd166; color: var(--ink); }
+
+#cart-count {
+  display: inline-block;
+  min-width: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #ffd166;
+  color: var(--ink);
+  font-weight: bold;
+  text-align: center;
+  transition: transform 0.2s;
+}
+#cart-count.bump { transform: scale(1.5); background: #fff; }
+
+.mobile_bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 16px;
+  background: var(--brand-dark);
+}
+.mobile_bar a { color: #fff; text-decoration: none; }
+
+/* ---------- layout ---------- */
+main { flex: 1 0 auto; display: flex; flex-flow: column; }
+
+nav {
+  display: none;               /* มือถือ: ซ่อนเมนูจนกว่าจะกดปุ่ม */
+  background: #f1ece4;
+  padding-bottom: 12px;
+}
+nav h2 {
+  margin: 14px 16px 4px;
+  font-size: 0.8em;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+ul.menu { list-style: none; margin: 0; padding: 0 8px; }
+ul.menu > li > a {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.menu > li > a:hover { background: #e4ddd1; }
+ul.menu > li.current > a { background: var(--brand); color: #fff; }
+
+article {
+  flex: 1;
+  min-width: 0;
+  padding: 16px;
+  min-height: 70vh;
+}
+
+h1 { margin: 0 0 6px; font-size: 1.5em; color: var(--brand-dark); }
+h2 { color: var(--brand-dark); }
+p.lead { margin: 0 0 16px; color: var(--muted); }
+.hint { font-size: 0.85em; color: var(--muted); }
+h2 + p.hint { margin-top: -8px; }          /* Adjacent sibling: คำอธิบายที่อยู่ติดหัวข้อ */
+.warn-text { color: var(--sale); }
+small { display: block; color: var(--muted); }
+
+body > footer {
+  padding: 16px;
+  text-align: center;
+  font-size: 0.85em;
+  color: #c9d6e0;
+  background: var(--brand-dark);
+}
+body > footer p { margin: 0; }
+
+/* ---------- กล่อง/แผง ---------- */
+.panel {
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.panel > h2 { margin: 0 0 10px; font-size: 1.15em; }
+.panel > h2 + p { margin-top: 0; }
+.hint-box {
+  padding: 10px 12px;
+  margin: 10px 0;
+  border-left: 4px solid #ffd166;
+  border-radius: 6px;
+  background: #fffaeb;
+  font-size: 0.9em;
+}
+.row-2 { display: grid; grid-template-columns: 1fr; gap: 0 14px; }
+
+/* ---------- ตาราง ---------- */
+.table-wrap { overflow-x: auto; margin: 12px 0 20px; }
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  font-size: 0.92em;
+}
+table.data th,
+table.data td {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+table.data th {
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  text-align: left;
+  white-space: nowrap;
+}
+table.data tbody tr:nth-child(even) { background: #fcfaf6; }
+table.data tbody tr:hover { background: #fff6e0; }
+table.data td.num, table.data th.num { text-align: right; white-space: nowrap; }
+table.data tfoot td { font-weight: bold; background: #f4efe6; }
+td.actions, td.nowrap { white-space: nowrap; }
+td.actions form { display: inline; }
+
+/* ---------- ฟอร์ม ---------- */
+form.filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: flex-end;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+form.filter label, .suggest-wrap { display: flex; flex-flow: column; font-size: 0.85em; color: var(--muted); }
+form.filter label.check { flex-flow: row; align-items: center; gap: 6px; }
+form.filter input:not([type="submit"]):not([type="checkbox"]),
+form.filter select,
+form.edit input:not([type="submit"]):not([type="checkbox"]):not([type="file"]),
+form.edit select,
+form.edit textarea,
+.inline-form input[type="text"],
+.inline-form input[type="number"],
+.checkout textarea {
+  padding: 6px 8px;
+  border: 1px solid #cfc6b8;
+  border-radius: 6px;
+  font: inherit;
+  color: var(--ink);
+  background: #fff;
+}
+input.short { width: 100px; }
+input:focus, select:focus, textarea:focus { outline: 2px solid #8fb8d6; }
+input:invalid:not(:placeholder-shown) { border-color: var(--sale); }
+
+.btn, button.btn, input[type="submit"] {
+  display: inline-block;
+  padding: 7px 16px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--brand);
+  color: #fff;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover, input[type="submit"]:hover { background: var(--brand-dark); text-decoration: none; }
+.btn.secondary { background: #e4ddd1; color: var(--ink); }
+.btn.danger { background: var(--sale); }
+.btn.small { padding: 3px 10px; font-size: 0.9em; }
+.btn.block, input[type="submit"].block { display: block; width: 100%; margin: 12px 0 8px; text-align: center; }
+[disabled], .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.userbar .btn.small { background: #ffd166; color: var(--ink); }
+
+/* ปุ่มที่หน้าตาเหมือนลิงก์ (ใช้ในฟอร์มลบ/ยกเลิก) */
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--brand);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link-btn.danger { color: var(--sale); }
+
+form.edit { max-width: 560px; }
+form.edit label { display: block; margin: 12px 0 4px; font-weight: bold; }
+form.edit label.check { font-weight: normal; }
+form.edit input[type="text"],
+form.edit input[type="email"],
+form.edit input[type="password"],
+form.edit input[type="tel"],
+form.edit input[type="number"],
+form.edit input[type="date"],
+form.edit select,
+form.edit textarea { width: 100%; }
+.inline-form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.inline-form input[type="text"] { flex: 1; min-width: 160px; }
+
+/* สมัครสมาชิก: สถานะการตรวจอีเมลด้วย Ajax (ดัดแปลงจากตัวอย่าง register ใน Lecture 10) */
+#email.thinking { background: #fff8e1; }
+#email.approved { border-color: var(--good); background: #f0faf3; }
+#email.denied   { border-color: var(--sale); background: #fdecea; }
+
+/* แถบความปลอดภัยของรหัสผ่าน: JavaScript เปลี่ยนความกว้างและสีของ #strength-bar */
+.strength { height: 6px; margin-top: 6px; border-radius: 3px; background: #eee; overflow: hidden; }
+#strength-bar { width: 0; height: 100%; transition: width 0.3s, background 0.3s; }
+ul.rules { margin: 6px 0 0; padding-left: 4px; list-style: none; font-size: 0.85em; }
+ul.rules > li::before { display: inline-block; width: 18px; }
+ul.rules > li.fail { color: var(--muted); }
+ul.rules > li.fail::before { content: "✗"; color: var(--sale); }
+ul.rules > li.pass { color: var(--good); }
+ul.rules > li.pass::before { content: "✓"; }
+
+/* ---------- ป้าย/สถานะ ---------- */
+.badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  white-space: nowrap;
+  background: #eee;
+}
+.badge.ok        { background: #dcf1e3; color: var(--good); }
+.badge.sale      { background: #fbe3dc; color: var(--sale); }
+.badge.warn      { background: #fdf0d5; color: var(--warn); }
+.badge.off       { background: #ececec; color: #777; }
+.badge.info      { background: var(--brand-soft); color: var(--brand); }
+.badge.pending   { background: #fdf0d5; color: var(--warn); }
+.badge.packing   { background: #e8e3fb; color: #5a45b5; }
+.badge.shipped   { background: var(--brand-soft); color: var(--brand); }
+.badge.delivered { background: #dcf1e3; color: var(--good); }
+.badge.cancelled { background: #ececec; color: #777; }
+
+.msg { padding: 10px 14px; border-radius: 8px; margin: 10px 0; }
+.msg.ok { background: #dcf1e3; color: var(--good); }
+.msg.error { background: #fbe3dc; color: var(--sale); }
+.msg.info { background: var(--brand-soft); color: var(--brand-dark); }
+
+del { color: var(--muted); }
+.price-sale { color: var(--sale); font-weight: bold; }
+
+details.sql { margin: 18px 0; }
+details.sql summary { cursor: pointer; color: var(--brand); }
+details.sql pre {
+  overflow-x: auto;
+  padding: 12px;
+  border-radius: 8px;
+  background: #1f2430;
+  color: #e6e6e6;
+  font-size: 0.82em;
+  line-height: 1.5;
+}
+
+/* ---------- หน้าแรก ---------- */
+.hero {
+  padding: 16px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: linear-gradient(120deg, var(--brand-soft), #fff6e0);
+}
+#greeting p { margin: 0 0 4px; font-size: 1.2em; font-weight: bold; color: var(--brand-dark); }
+td[id^="left-"] .badge { margin-left: 6px; }
+
+/* ---------- การ์ดหนังสือ ---------- */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.book-card {
+  display: flex;
+  flex-flow: column;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.book-card .cover { position: relative; display: block; }
+.book-card .cover img { display: block; width: 100%; aspect-ratio: 5 / 7; object-fit: cover; }
+.cover .off {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--sale);
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+.book-card .cover .promo-tag {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 3px 8px;
+  background: rgba(200, 85, 61, 0.92);
+  color: #fff;
+  font-size: 0.75em;
+}
+.book-card .body { display: flex; flex-flow: column; flex: 1; padding: 8px 10px 12px; }
+.book-card h3 { margin: 0; font-size: 0.95em; line-height: 1.35; }
+.book-card h3 a { color: var(--ink); text-decoration: none; }
+.book-card .author { margin: 2px 0 6px; font-size: 0.8em; color: var(--muted); }
+.book-card .price { font-size: 1.05em; }
+.stock { font-size: 0.8em; color: var(--muted); }
+.stock.low { color: var(--sale); }
+.book-card .add-cart { margin-top: auto; align-self: flex-start; }
+.book-card .body > b + .add-cart, .book-card .stock + .add-cart { margin-top: 8px; }
+
+/* หน้ารายละเอียดหนังสือ */
+.book-detail { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
+.book-detail figure.cover { position: relative; margin: 0; max-width: 260px; }
+.book-detail figure.cover img { display: block; width: 100%; border-radius: 8px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); }
+.book-detail .author { margin-top: 0; color: var(--muted); }
+.price.big { font-size: 1.5em; margin: 6px 0; }
+.price.big .badge { font-size: 0.5em; vertical-align: middle; }
+
+/* ค้นหาด้วย Ajax: รายการแนะนำลอยใต้ช่องค้นหา */
+.suggest-wrap { position: relative; }
+#suggest {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+  width: 320px;
+  max-width: 85vw;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+#suggest ul { list-style: none; margin: 0; padding: 4px; }
+#suggest a { display: flex; gap: 8px; align-items: center; padding: 5px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; }
+#suggest a:hover { background: var(--brand-soft); }
+#suggest small { font-size: 0.85em; }
+#suggest .suggest-empty { margin: 0; padding: 8px 12px; }
+
+/* กล่องข้อความแจ้งเตือนมุมจอ (สร้างด้วย JavaScript) */
+#toast { position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; flex-flow: column; gap: 8px; max-width: 340px; }
+#toast p { margin: 0; padding: 10px 14px; border-radius: 8px; color: #fff; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2); animation: toast-in 0.25s; }
+#toast p.ok { background: var(--good); }
+#toast p.error { background: var(--sale); }
+@keyframes toast-in { from { transform: translateY(20px); opacity: 0; } }
+
+/* ---------- ตะกร้า / สั่งซื้อ ---------- */
+.book-cell { display: flex; gap: 10px; align-items: flex-start; min-width: 220px; }
+.book-cell small { font-size: 0.85em; }
+.qty-form input[type="number"] { width: 64px; padding: 4px 6px; border: 1px solid #cfc6b8; border-radius: 6px; font: inherit; }
+.cart-bottom, .checkout, .detail-bottom, .auth-layout { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.summary dl { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: 0; }
+.summary dd { margin: 0; text-align: right; }
+.summary .total { padding-top: 8px; border-top: 1px solid var(--line); font-size: 1.15em; font-weight: bold; color: var(--brand-dark); }
+.progress { height: 8px; border-radius: 4px; background: #eee; overflow: hidden; }
+.progress > div { height: 100%; background: linear-gradient(90deg, #ffd166, var(--good)); }
+.coupon-applied { padding: 8px 10px; border: 1px dashed var(--good); border-radius: 8px; }
+.mini-list { list-style: none; margin: 0 0 10px; padding: 0; font-size: 0.9em; }
+.mini-list > li { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; border-bottom: 1px dotted var(--line); }
+.checkout textarea { width: 100%; }
+.empty { padding: 30px; text-align: center; background: var(--card); border: 1px dashed var(--line); border-radius: 10px; }
+
+/* ขั้นตอนการสั่งซื้อ: ใช้ counter + ::before สร้างตัวเลขวงกลม */
+ol.steps { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 16px; padding: 0; list-style: none; counter-reset: step; font-size: 0.9em; color: var(--muted); }
+ol.steps > li { counter-increment: step; }
+ol.steps > li::before {
+  content: counter(step);
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: #e4ddd1;
+  color: var(--ink);
+}
+ol.steps > li.done::before { content: "✓"; background: var(--good); color: #fff; }
+ol.steps > li.now { color: var(--brand-dark); font-weight: bold; }
+ol.steps > li.now::before { background: var(--brand); color: #fff; }
+
+.pay-methods { display: flex; flex-wrap: wrap; gap: 10px; }
+.pay-option { flex: 1; min-width: 150px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 8px; cursor: pointer; }
+.pay-option:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); }
+
+/* Payment Gateway จำลอง */
+.gateway { max-width: 480px; margin: 0 auto 20px; overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 30px rgba(23, 61, 87, 0.12); }
+.gateway-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #1f2430; color: #fff; }
+.gateway-amount { display: flex; flex-flow: column; padding: 14px 16px; background: #f7f9fb; border-bottom: 1px solid var(--line); }
+.gateway-amount b { font-size: 1.8em; color: var(--brand-dark); }
+.gateway form, .gateway .hint-box { margin: 0 16px 12px; }
+.gateway form.edit { max-width: none; }
+.gateway-foot { margin: 0; padding: 10px 16px 14px; font-size: 0.9em; }
+.qr-pay { padding: 16px; text-align: center; }
+svg.qr { width: 200px; height: 200px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; }
+#qr-box { transition: opacity 0.3s; }
+
+/* ---------- คำสั่งซื้อ ---------- */
+.order-head p { margin: 4px 0; }
+
+/* timeline สถานะพัสดุ */
+ol.timeline { list-style: none; margin: 10px 0 20px; padding: 0 0 0 18px; border-left: 3px solid var(--line); }
+ol.timeline > li { position: relative; margin: 0 0 14px; padding-left: 10px; }
+ol.timeline > li::before {
+  content: "";
+  position: absolute;
+  left: -27px;
+  top: 6px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--brand);
+  border: 3px solid var(--paper);
+}
+ol.timeline > li:last-child::before { background: var(--good); }
+ol.timeline > li.new { animation: flash-new 2s; }
+ol.timeline time { font-size: 0.85em; color: var(--muted); }
+ol.timeline small { display: inline; }
+@keyframes flash-new { from { background: #fff3c4; } }
+
+.pager { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 16px; }
+.pager a, .pager span {
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  text-decoration: none;
+}
+.pager span.current { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+/* ---------- กราฟ/แดชบอร์ด ---------- */
+.bar {
+  height: 14px;
+  min-width: 2px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #4f8db8, var(--brand));
+}
+.bar-cell { min-width: 140px; }
+.dash-grid { display: grid; grid-template-columns: 1fr; gap: 0 16px; }
+.chart-box { position: relative; height: 260px; }
+.up { color: var(--good); }
+.down { color: var(--sale); }
+
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 14px 0; }
+.stat {
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+a.stat:hover { border-color: var(--brand); text-decoration: none; }
+.stat b { display: block; font-size: 1.5em; color: var(--brand-dark); }
+.stat span { font-size: 0.85em; color: var(--muted); }
+
+/* ลิงก์ไปหน้าคำสั่งซื้อในการ์ดสรุป (Attribute selector แบบขึ้นต้นด้วย) */
+a.stat[href^="orders.php"] b { color: var(--warn); }
+
+/* นำเข้าด้วย ISBN */
+.isbn-card { display: flex; gap: 12px; align-items: flex-start; margin-top: 10px; padding: 10px; border-radius: 8px; background: var(--brand-soft); white-space: pre-line; }
+.isbn-card img { width: 80px; border-radius: 4px; }
+
+.demo-accounts ul { padding-left: 18px; }
+
+/* ---------- Specificity (น้ำหนักของ selector) ----------
+   ถ้ามีหลายกฎกำหนด property เดียวกันให้ element เดียว เบราว์เซอร์เลือกกฎที่ "น้ำหนักมากกว่า"
+   นับเป็น (ID, Class/Attribute/Pseudo-class, Type/Pseudo-element)
+     .badge                 -> (0,1,0)
+     .stat b                -> (0,1,1)
+     a.stat[href^="orders.php"] b -> (0,2,2)  ชนะ .stat b จึงเป็นสีส้ม
+     #cart-count            -> (1,0,0)  ชนะ .count / .badge ทุกกรณี
+     #cart-count.bump       -> (1,1,0)  ชนะ #cart-count ตอนตัวเลขเด้ง
+   ตัวอย่างด้านล่าง: ตัวเลขในตะกร้าใช้ทั้ง class "count" และ ID "cart-count"
+   กฎ .userbar .count (0,2,0) กำหนดพื้นหลังสีขาว แต่ #cart-count (1,0,0) น้ำหนักมากกว่า
+   ผลจริงจึงเป็นพื้นหลังสีเหลือง #ffd166 ตาม #cart-count */
+.userbar .count { background: #fff; }
+
+/* ===== Tablet / Desktop (768px ขึ้นไป) ===== */
+@media only screen and (min-width: 768px) {
+  body > header { flex-flow: row; justify-content: space-between; align-items: center; padding: 14px 24px; }
+  .search { flex: 1; max-width: 420px; }
+  .mobile_bar { display: none; }
+  main { flex-flow: row; }
+  nav { display: block; order: 1; width: 230px; flex-shrink: 0; }
+  article { order: 2; padding: 20px 28px; }
+  .book-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .stats { grid-template-columns: repeat(4, 1fr); }
+  .row-2 { grid-template-columns: 1fr 1fr; }
+  .cart-bottom, .checkout, .auth-layout { grid-template-columns: 3fr 2fr; align-items: start; }
+  .detail-bottom { grid-template-columns: 3fr 2fr; align-items: start; }
+  .book-detail { grid-template-columns: 260px 1fr; }
+  .dash-grid { grid-template-columns: 1fr 1fr; }
+  .dash-grid .wide { grid-column: 1 / -1; }
+}
+
+/* ===== จอกว้าง (1200px ขึ้นไป) ===== */
+@media only screen and (min-width: 1200px) {
+  article { padding: 24px 40px; }
+  .chart-box { height: 300px; }
+  .book-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}

@@ -1,0 +1,51 @@
+# อ่านเพลิน Bookstore (ฉบับส่งงานสุดท้าย วิชา Web Development)
+#   docker compose up -d --build     เปิดระบบ
+#   เว็บ        http://localhost:8081
+#   phpMyAdmin  http://localhost:8082   (root, ไม่มีรหัสผ่าน)
+#   ล้างข้อมูลกลับเป็นค่าเริ่มต้น: docker compose down -v แล้ว up ใหม่
+name: bookshop-final
+
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "1"
+      MARIADB_DATABASE: bookshop
+      TZ: Asia/Bangkok
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./database/bookshop.sql:/docker-entrypoint-initdb.d/bookshop.sql:ro
+      - dbdata:/var/lib/mysql
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      retries: 30
+
+  web:
+    build: ./docker
+    environment:
+      DB_HOST: db
+      TZ: Asia/Bangkok
+    volumes:
+      - ./bookshop:/var/www/html
+    ports:
+      - "8081:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: ""
+    ports:
+      - "8082:80"
+    depends_on:
+      - db
+
+volumes:
+  dbdata:

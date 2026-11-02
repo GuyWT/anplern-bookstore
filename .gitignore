@@ -1,0 +1,12 @@
+# Documents and reports are shared privately, not on GitHub
+*.pdf
+*.docx
+docs/
+*.txt
+
+# OS / editor junk
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
